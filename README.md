@@ -36,6 +36,10 @@ bundle
 
 rails db:create db:migrate db:seed
 
+# 4. Create a folder to hold the certificates
+
+mkdir path/to/project/certificates/users
+
 # Type localhost:3000
 
 # DO NOT FORGET TO install node in order to test real time functionalities
