@@ -25,5 +25,3 @@ class User < ApplicationRecord
         where("email iLIKE '%#{term}%' OR username iLIKE '%#{term}%' AND id != ?", id)
     end
 end
-#
-"cd /home/rails/piratechest/shared/certificates/users && mkdir #{u.id} && cd #{u.id} && ssh-keygen -t rsa -b 2048 -m PEM -v -f private_key.pem -N #{u.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{u.email}"
