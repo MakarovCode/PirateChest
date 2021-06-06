@@ -18,9 +18,6 @@ Ruby on Rails application for managing accounts and passwords encrypted via SSH 
     * I made some changes in the Serket gem in order to work with it easier.
     * Every time a user created a password (login and pass) this values are encrypted via SSH Keys and saved into the database, then they are decrypted using the when the user fetch them.
 
-# UPDATE - Have in mind
-* I found some issues in some Linux distributions with the encoding so have that in mind when using this project.
-
 # SOME SCREENSHOTS
 ![screen1](https://piratechest.geekoi.com/piratechest1.png)
 
