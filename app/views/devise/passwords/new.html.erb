@@ -1,0 +1,19 @@
+<h2 style="text-align:center;">¿Olvidaste tu clave?</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+<%= devise_error_messages! %>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <%= f.email_field :email, autofocus: true, class: "form-control input-lg", placeholder: "Email" %>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12 btn-group-vertical">
+        <%= f.submit "Enviar", class: "btn btn-danger btn-lg btn-block" %>
+        <%= render "devise/shared/links" %>
+
+<% end %>
+
+
+

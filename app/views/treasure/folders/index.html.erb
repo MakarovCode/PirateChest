@@ -1,0 +1,283 @@
+<!-- Content -->
+<section id="content" class="container" ng-app="piratechest" ng-controller="FoldersController as foldersCtrl" ng-init="foldersCtrl.setUser('<%= current_user.email%>', '<%= current_user.authentication_token%>')">
+    <!-- Breadcrumb -->
+    <ol class="breadcrumb hidden-xs">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Chests</a></li>
+        <li class="active" ng-hide="foldersCtrl.selectedFolder === null">{{foldersCtrl.selectedFolder.name}}</li>
+        <li class="active" ng-hide="foldersCtrl.selectedPassword === null">{{foldersCtrl.selectedPassword.name}}</li>
+    </ol>
+
+    <h4 class="page-title">DASHBOARD</h4>
+
+    <hr class="whiter" />
+
+    <!-- Main Widgets -->
+    <div class="block-area" ng-cloak>
+        <div class="row">
+            <div class="col-md-6" id="chest-size">
+                <div class="tile">
+                    <h2 class="tile-title">Chests</h2>
+                    <div class="tile-config">
+                        <button type="type" class="btn btn-xs" ng-click="foldersCtrl.show_new_folder = !foldersCtrl.show_new_folder;">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <div class="listview narrow">
+                        <div class="media p-l-5" ng-show="foldersCtrl.show_new_folder === true">
+                            <div class="media-body">
+                                <div class="alert alert-danger" ng-hide="foldersCtrl.message_folder.error === null">{{foldersCtrl.message_folder.error}}</div>
+                                <div class="alert alert-success" ng-hide="foldersCtrl.message_folder.success === null">{{foldersCtrl.message_folder.success}}</div>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Enter the new folder name" ng-model="foldersCtrl.new_folder.name"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-success" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.createFolder();">
+                                            <i class="fa fa-floppy-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="media p-l-5" ng-repeat="folder in foldersCtrl.folders" style="position: relative;" ng-click="foldersCtrl.selectFolder($event, folder)">
+                            <div class="pull-left">
+                                <i class="fa fa-folder-o fa-3x"></i>
+                            </div>
+                            <div class="media-body">
+                                <a class="t-overflow" href="">{{folder.name}}</a><br />
+                                <small class="text-muted">{{folder.created_at}} by {{folder.owner}}</small><br/>
+                            </div>
+                            <div style="position:absolute; top: 10px; right: 20px;">
+                                <i class="fa fa-key"></i> X {{folder.passwords.length}}
+                            </div>
+                            <div class="row" ng-show="foldersCtrl.selectedFolder.id === folder.id">
+                                <hr class="whiter" style="margin-top: 10px;"/>
+                                <div class="col-sm-11 col-sm-offset-1">
+                                    <div class="media p-l-5" ng-repeat="password in foldersCtrl.selectedFolder.passwords" style="position: relative;" ng-click="foldersCtrl.selectPassword($event, password)">
+                                        <div class="pull-left">
+                                            <i class="fa fa-key fa-3x"></i>
+                                        </div>
+                                        <div class="media-body">
+                                            <a class="t-overflow" href="">{{password.name}}</a><br />
+                                            <small class="text-muted">{{folder.created_at}} by {{folder.owner}}</small><br/>
+                                        </div>
+                                        <div style="position:absolute; top: 10px; right: 10px;">
+                                            <i class="fa fa-users"></i> X {{password.shares.length}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" id="keys-cont">
+                <div class="tile">
+                    <h2 class="tile-title">Keys</h2>
+                    <div class="tile-config">
+                        <button type="type" class="btn btn-xs" ng-click="foldersCtrl.resetNewPassword();">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <div class="listview narrow">
+                        <div class="media p-l-5">
+                            <div class="media-body">
+                                <div class="alert alert-info" ng-show="foldersCtrl.selectedFolder === null">
+                                    Select a Chest to create Key for it!
+                                </div>
+                                <div class="alert alert-danger" ng-hide="foldersCtrl.message_password.error === null">{{foldersCtrl.message_password.error}}</div>
+                                <div class="alert alert-success" ng-hide="foldersCtrl.message_password.success === null">{{foldersCtrl.message_password.success}}</div>
+                                <div ng-hide="foldersCtrl.selectedFolder === null">
+                                    <h4 style="text-align:center;">{{foldersCtrl.selectedFolder.name}}
+                                        <button class="btn btn-alt btn-sm" type="button" ng-disabled="foldersCtrl.thinking === true" data-toggle="modal" data-target="#delete2-confirm">
+                                            <i class="fa fa-trash-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                    </h4>
+                                    <div class="" style="margin-bottom: 10px;">
+                                        <input type="text" class="form-control" placeholder="Enter the new key name" ng-model="foldersCtrl.new_password.name"/>
+                                    </div>
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <input type="{{foldersCtrl.no_password_login}}" class="form-control" placeholder="Enter the new key login" ng-model="foldersCtrl.new_password.login"/>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.no_password_login = 'text'" ng-show="foldersCtrl.no_password_login === 'password'">
+                                                <i class="fa fa-eye" ng-hide="foldersCtrl.thinking === true"></i>
+                                            </button>
+                                            <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.no_password_login = 'password'" ng-hide="foldersCtrl.no_password_login === 'password'">
+                                                <i class="fa fa-eye-slash" ng-hide="foldersCtrl.thinking === true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="input-group" style="margin-bottom: 10px;">
+                                        <input type="{{foldersCtrl.no_password_pass}}" class="form-control" placeholder="Enter the new key pass" ng-model="foldersCtrl.new_password.pass"/>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.no_password_pass = 'text'" ng-show="foldersCtrl.no_password_pass === 'password'">
+                                                <i class="fa fa-eye" ng-hide="foldersCtrl.thinking === true"></i>
+                                            </button>
+                                            <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.no_password_pass = 'password'" ng-hide="foldersCtrl.no_password_pass === 'password'">
+                                                <i class="fa fa-eye-slash" ng-hide="foldersCtrl.thinking === true"></i>
+                                            </button>
+                                            <button class="btn btn-success" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.getRandomPassword();">
+                                                <i class="fa fa-magic" ng-hide="foldersCtrl.thinking === true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div class="" style="margin-bottom: 10px;">
+                                        <input type="text" class="form-control" placeholder="Enter the new key url" ng-model="foldersCtrl.new_password.url"/>
+                                    </div>
+                                    <div class="" style="margin-bottom: 10px;">
+                                        <textarea class="form-control" placeholder="Enter the new key note" ng-model="foldersCtrl.new_password.notes"></textarea>
+                                    </div>
+                                    <div class="" style="margin-bottom: 10px; text-align: center;">
+                                        <button class="btn btn-success" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.createPassword();" ng-show="foldersCtrl.selectedPassword === null">
+                                            Save
+                                            <i class="fa fa-floppy-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                        <button class="btn btn-success" type="button" ng-disabled="foldersCtrl.thinking === true" ng-hide="foldersCtrl.selectedPassword === null" data-toggle="modal" data-target="#update-confirm">
+                                            Update
+                                            <i class="fa fa-floppy-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                        <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.resetNewPassword();">
+                                            New/Clean
+                                            <i class="fa fa-ban" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                        <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" ng-hide="foldersCtrl.selectedPassword === null" data-toggle="modal" data-target="#delete-confirm">
+                                            Delete
+                                            <i class="fa fa-trash-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                        <button class="btn btn-alt" type="button" ng-disabled="foldersCtrl.thinking === true" data-toggle="modal" data-target="#share-confirm" ng-click="foldersCtrl.sharePassword()">
+                                            Share
+                                            <i class="fa fa-user-plus" ng-hide="foldersCtrl.thinking === true"></i>
+                                            <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="update-confirm" tabindex="-1" role="dialog" aria-labelledby="update-confirmLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="update-confirmLabel">Need confirmation!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure? this action can't be undone
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-alt" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="foldersCtrl.updatePassword();">Do it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="delete-confirm" tabindex="-1" role="dialog" aria-labelledby="delete-confirmLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete-confirmLabel">Need confirmation!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure? this action can't be undone
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-alt" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="foldersCtrl.destroyPassword();">Do it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="delete2-confirm" tabindex="-1" role="dialog" aria-labelledby="delete2-confirmLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete2-confirmLabel">Need confirmation!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure? this action can't be undone, you'll lose this Chest and all it Keys!
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-alt" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="foldersCtrl.destroyFolder();">Do it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="share-confirm" tabindex="-1" role="dialog" aria-labelledby="share-confirmLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="share-confirmLabel">Share Keys!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Write the email or username of the people you want to share your Key with!
+                    </p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="users_to_share" placeholder="Select user..." ng-model="foldersCtrl.new_user"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-alt btn-lg" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.new_user = null;" style="height: 34px;">
+                                <i class="fa fa-ban" ng-hide="foldersCtrl.thinking === true"></i>
+                                <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p ng-hide="foldersCtrl.sharedUsers.length === 0">Selected users:</p>
+                        <ul>
+                            <li ng-repeat="user in foldersCtrl.sharedUsers">
+                                {{user.email}}
+                                <button class="btn btn-alt btn-lg" type="button" ng-disabled="foldersCtrl.thinking === true" ng-click="foldersCtrl.removeUser(user)" style="height: 20px;">
+                                    <i class="fa fa-trash-o" ng-hide="foldersCtrl.thinking === true"></i>
+                                    <i class="fa fa-spinner" ng-show="foldersCtrl.thinking === true"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-alt" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="foldersCtrl.shareToUsers();">Do it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+  setTimeout(function(){
+    $("#keys-cont").css({
+      'width': $("#chest-size").width() + "px",
+      'position': "fixed",
+      'right': "20px",
+      'top': "100px"
+    })
+  }, 1000)
+</script>

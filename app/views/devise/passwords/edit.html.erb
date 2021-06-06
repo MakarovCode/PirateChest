@@ -1,0 +1,30 @@
+<h2 style="text-align:center;">Cambiar Clave</h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+<%= devise_error_messages! %>
+<%= f.hidden_field :reset_password_token %>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> characters minimum)</em><br />
+        <% end %>
+        <%= f.password_field :password, autofocus: true, autocomplete: "off", class: "form-control input-lg" %>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control input-lg" %>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12 btn-group-vertical">
+        <%= f.submit "Cambiar clave", class: "btn btn-danger btn-lg btn-block" %>
+        <%= render "devise/shared/links" %>
+
+<% end %>
+
+
+
+

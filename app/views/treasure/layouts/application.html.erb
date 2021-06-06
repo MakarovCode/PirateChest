@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PirateChest</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="format-detection" content="telephone=no">
+        <meta charset="UTF-8">
+        <meta name="description" content="Save your password securely">
+        <meta name="keywords" content="Security, Passwords">
+
+        <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+        <%= stylesheet_link_tag    'treasure/application', media: 'all', 'data-turbolinks-track' => true %>
+
+        <%= csrf_meta_tags %>
+    </head>
+    <body id="skin-blur-violate">
+        
+        <% if notice %>
+        <div class="alert alert-success"><%= notice %></div>
+        <% end %>
+        <% if alert %>
+        <div class="alert alert-danger"><%= alert %></div>
+        <% end %>
+        
+        <%= render "treasure/layouts/header" %>
+
+        <section id="main" class="p-relative" role="main">
+            <%= render "treasure/layouts/sidebar" %>
+            <%= yield %>
+        </section>
+
+        <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+        <%= javascript_include_tag 'treasure/application', 'data-turbolinks-track' => true %>
+
+        <script>
+            PirateChest.initialize();
+        </script>
+    </body>
+</html>

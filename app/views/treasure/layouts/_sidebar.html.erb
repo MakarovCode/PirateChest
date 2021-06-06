@@ -1,0 +1,55 @@
+<!-- Sidebar -->
+<aside id="sidebar">
+
+    <!-- Sidbar Widgets -->
+    <div class="side-widgets overflow">
+        <!-- Profile Menu -->
+        <div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
+            <a href="" data-toggle="dropdown">
+                <%= image_tag Gravatar.new(current_user.email).image_url, class: "profile-pic animated"%>
+            </a>
+            <ul class="dropdown-menu profile-menu">
+                <li><a href="">My Profile</a> <i class="icon left">&#61903;</i><i class="icon right">&#61815;</i></li>
+                <li><a href="">Messages</a> <i class="icon left">&#61903;</i><i class="icon right">&#61815;</i></li>
+                <li><a href="">Settings</a> <i class="icon left">&#61903;</i><i class="icon right">&#61815;</i></li>
+                <li><a href="<%= destroy_user_session_path %>">Sign Out</a> <i class="icon left">&#61903;</i><i class="icon right">&#61815;</i></li>
+            </ul>
+            <h4 class="m-0"><%= current_user.username %></h4>
+            <%= current_user.email%>
+        </div>
+
+        <!-- Calendar -->
+        <div class="s-widget m-b-25">
+            <div id="sidebar-calendar"></div>
+        </div>
+
+        <!-- Feeds -->
+<!--
+        <div class="s-widget m-b-25">
+            <h2 class="tile-title">
+                News Feeds
+            </h2>
+
+            <div class="s-widget-body">
+                <div id="news-feed"></div>
+            </div>
+        </div>
+-->
+
+    </div>
+
+    <!-- Side Menu -->
+    <ul class="list-unstyled side-menu">
+        <li class="active">
+            <a class="sa-side-home" href="<%= root_path %>">
+                <span class="menu-item">Dashboard</span>
+            </a>
+        </li>
+        <li class="active">
+            <%= link_to destroy_user_session_path, class: "sa-side-back", method: :delete do %>
+                <span class="menu-item">Sign out</span>
+            <% end %>
+        </li>
+    </ul>
+
+</aside>

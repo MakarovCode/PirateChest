@@ -1,0 +1,278 @@
+(function(){
+    var module = angular.module('folders-module', ['angular.chosen']);
+    module.controller('FoldersController', ['$http', '$scope', function($http, $scope){
+        var self = this;
+
+        this.folders = [];
+
+        this.show_new_folder = true;
+
+        this.no_password_login = 'password';
+        this.no_password_pass = 'password';
+
+        this.thinking = false;
+
+        this.last_select_val = "";
+
+        this.selectedFolder = null;
+        this.selectedPassword = null;
+
+        this.sharedUsers = [];
+        this.users = [];
+
+        this.message_folder = {
+            success: null,
+            error: null
+        }
+
+        this.message_password = {
+            success: null,
+            error: null
+        }
+
+        this.new_folder = {
+            name: null
+        }
+
+        this.new_password = {
+            name: null,
+            login: null,
+            pass: null,
+            url: null,
+            notes: null,
+        }
+
+        this.user = {
+            email: null,
+            token: null
+        }
+
+        this.resetMessages = function(){
+            this.message_folder = {
+                success: null,
+                error: null
+            }
+
+            this.message_password = {
+                success: null,
+                error: null
+            }
+        }
+
+        this.setUser = function(email, token){
+            this.user.email = email;
+            this.user.token = token;
+            this.load_folders();
+        }
+
+        this.resetNewPassword = function(){
+            this.new_password = {
+                name: null,
+                login: null,
+                pass: null,
+                url: null,
+                notes: null,
+            }
+            this.selectedPassword = null;
+            this.no_password_login = 'password';
+            this.no_password_pass = 'password';
+            this.resetMessages();
+            this.sharedUsers = [];
+        }
+
+        this.selectFolder = function($event, folder){
+            $event.stopPropagation();
+            if (this.selectedFolder != null){
+                if (this.selectedFolder.id === folder.id){
+                    this.selectedFolder = null;
+                }
+                else{
+                    this.selectedFolder = folder;
+                }
+            }
+            else{
+                this.selectedFolder = folder;
+            }
+
+            this.sharedUsers = [];
+            this.resetNewPassword();
+            this.no_password_login = 'password';
+            this.no_password_pass = 'password';
+            this.resetMessages();
+        }
+
+        this.selectPassword = function($event, password){
+            $event.stopPropagation();
+            this.selectedPassword = password;
+            this.new_password = {
+                name: this.selectedPassword.name,
+                login: this.selectedPassword.login,
+                pass: this.selectedPassword.pass,
+                url: this.selectedPassword.url,
+                notes: this.selectedPassword.notes,
+            }
+
+            this.sharedUsers = [];
+            this.no_password_login = 'password';
+            this.no_password_pass = 'password';
+            this.resetMessages();
+        }
+
+        this.getRandomPassword = function(){
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz*+~=$%&@#.;:";
+            var string_length = 80;
+            var randomstring = '';
+            var charCount = 0;
+            var numCount = 0;
+
+            for (var i=0; i<string_length; i++) {
+                // If random bit is 0, there are less than 3 digits already saved, and there are not already 5 characters saved, generate a numeric value.
+                if((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
+                    var rnum = Math.floor(Math.random() * 10);
+                    randomstring += rnum;
+                    numCount += 1;
+                } else {
+                    // If any of the above criteria fail, go ahead and generate an alpha character from the chars string
+                    var rnum = Math.floor(Math.random() * chars.length);
+                    randomstring += chars.substring(rnum,rnum+1);
+                    charCount += 1;
+                }
+            }
+            this.new_password.pass = randomstring;
+        }
+
+        this.load_folders = function(){
+            $http.get("/treasure/api/v1/folders.json", {params: PirateChest.getAuthParams(this.user)})
+                .success(function(data, status, headers, config){
+                self.folders = data;
+                if (self.selectedFolder != null){
+                    for (var i = 0; i < self.folders.length; i ++){
+                        if (self.selectedFolder.id === self.folders[i].id){
+                            self.selectedFolder = self.folders[i];
+                        }
+                    }
+                }
+                else{
+                    self.load_chosen();
+                }
+            })
+                .error(function(data, status, headers, config){
+                self.message_folder.error = data.message;
+            });
+        }
+
+        this.createFolder = function(){
+            var params = {
+                user_email: this.user.email,
+                user_token: this.user.token,
+                folder: this.new_folder
+            }
+
+            this.thinking = true;
+            $http.post("/treasure/api/v1/folders.json", params)
+                .success(function(data, status, headers, config){
+
+                self.new_folder = {
+                    name: null
+                }
+                self.thinking = false;
+                self.load_folders();
+                self.message_folder.success = data.message;
+            })
+                .error(function(data, status, headers, config){
+                self.thinking = false;
+                self.message_folder.error = data.message;
+            });
+        }
+
+        this.createPassword = function(){
+            var params = {
+                user_email: this.user.email,
+                user_token: this.user.token,
+                password: this.new_password
+            }
+
+            this.thinking = true;
+            $http.post("/treasure/api/v1/folders/"+this.selectedFolder.id+"/passwords.json", params)
+                .success(function(data, status, headers, config){
+
+                self.resetNewPassword();
+                self.thinking = false;
+                self.load_folders();
+                self.message_password.success = data.message;
+            })
+                .error(function(data, status, headers, config){
+                self.thinking = false;
+                self.message_password.error = data.message;
+            });
+        }
+
+        this.updatePassword = function(){
+            var params = {
+                user_email: this.user.email,
+                user_token: this.user.token,
+                password: this.new_password
+            }
+
+            this.thinking = true;
+            $http.put("/treasure/api/v1/folders/"+this.selectedFolder.id+"/passwords/"+this.selectedPassword.id+".json", params)
+                .success(function(data, status, headers, config){
+                self.thinking = false;
+                self.load_folders();
+                self.message_password.success = data.message;
+            })
+                .error(function(data, status, headers, config){
+                self.thinking = false;
+                self.message_password.error = data.message;
+            });
+        }
+
+        this.destroyPassword = function(){
+            var params = {
+                user_email: this.user.email,
+                user_token: this.user.token,
+            }
+
+            this.thinking = true;
+            $http.delete("/treasure/api/v1/folders/"+this.selectedFolder.id+"/passwords/"+this.selectedPassword.id+".json", {params: params})
+                .success(function(data, status, headers, config){
+                self.thinking = false;
+                self.load_folders();
+                self.resetNewPassword();
+                self.message_password.success = data.message;
+            })
+                .error(function(data, status, headers, config){
+                self.thinking = false;
+                self.message_password.error = data.message;
+            });
+        }
+
+        //$('.tag-select').chosen({allow_single_deselect: true, width: "100%"});
+
+        this.load_chosen = function(){
+
+            $( "#users_to_share" ).autocomplete({
+                source: "/treasure/api/v1/users.json?"+PirateChest.getAuthParamsString(self.user),
+                minLength: 4,
+                select: function( event, ui ) {
+                    $scope.$apply(function(){
+                        self.sharedUsers.push(ui.item);
+                    });
+                }
+            });
+        }
+
+        this.removeUser = function(user){
+            for (var i = 0; i < this.sharedUsers.length; i ++){
+                if (this.sharedUsers[i].id === user.id){
+                    this.sharedUsers.splice(i, 1);
+                    return
+                }
+            }
+        }
+
+
+
+
+    }]);
+})();
