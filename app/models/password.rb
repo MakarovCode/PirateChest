@@ -37,5 +37,6 @@ class Password < ApplicationRecord
     def private_key_path
         key_path = "#{Rails.root.join('certificates', 'users')}/#{self.folder.user_id}/private_key.pem" if Rails.env == "development"
         key_path = "/home/rails/piratechest/shared/certificates/users/#{self.folder.user_id}/private_key.pem" if Rails.env == "production"
+        key_path
     end
 end
