@@ -1,28 +1,46 @@
-== README
+# PirateChest
+Ruby on Rails application for managing accounts and passwords encrypted via SSH keys.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# DEMO
+[PirateChest](https://piratechest.geekoi.com) - Test the web app
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+# TECHNOLOGIES USED AND CHALLENGES
+* SSH Keys Encryption / Decryption
+* Ruby;
+    * Version 2.7.1;
+* Rails;
+    * Version 6.1;
+* AngularJS;
+    * Legacy;
+* PostgreSQL;
+    * 13;
+
+
+# SOME SCREENSHOTS
+![screen1](https://piratechest.geekoi.com/piratechest1.png)
+
+# HOW TO INSTALL
+
+```ruby
+# 1. Clone the repo
+
+git clone https://github.com/MakarovCode/PirateChest.git
+
+# 2. Run bundle
+
+bundle
+
+# 3. Run the DB
+
+rails db:create db:migrate db:seed
+
+# Type localhost:3000
+
+# DO NOT FORGET TO install node in order to test real time functionalities
+```
+
+# DISCLAIMER
+I DO NOT give support to this project any more, you are free to use the code in anyway you want, is free to use, but this web application as it is may present Bugs and Errors.
+
+I developed this project several years ago, I kept a DEMO but is not getting supported, some libraries and dependencies maybe deprecated, the only technologies I updated were Ruby, Rails and PostgreSQL.
