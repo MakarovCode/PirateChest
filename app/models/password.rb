@@ -8,7 +8,9 @@ class Password < ApplicationRecord
     validates :name, :login, :pass, :folder_id, presence: true
 
     def encrypt_data
-        key_path = "#{Rails.root.join('certificates', 'users')}/#{self.folder.user_id}/public_key.pem"
+        key_path = "#{Rails.root.join('certificates', 'users')}/#{self.folder.user_id}/public_key.pem" if Rails.env == "development"
+        key_path = "/home/rails/piratechest/shared/certificates/users/#{self.folder.user_id}/public_key.pem" if Rails.env == "production"
+
         self.login = Serket.encrypt(self.login, key_path, self.folder.user.email)
         self.pass = Serket.encrypt(self.pass, key_path, self.folder.user.email)
 
@@ -33,6 +35,7 @@ class Password < ApplicationRecord
     end
 
     def private_key_path
-        key_path = "#{Rails.root.join('certificates', 'users')}/#{self.folder.user_id}/private_key.pem"
+        key_path = "#{Rails.root.join('certificates', 'users')}/#{self.folder.user_id}/private_key.pem" if Rails.env == "development"
+        key_path = "/home/rails/piratechest/shared/certificates/users/#{self.folder.user_id}/private_key.pem" if Rails.env == "production"
     end
 end
