@@ -17,7 +17,7 @@ class User < ApplicationRecord
       if Rails.env == "development"
         system "cd #{Rails.root.join('certificates/users')} && mkdir #{self.id} && cd #{self.id} && ssh-keygen -t rsa -b 2048 -v -f private_key.pem -N #{self.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{self.email}"
       else
-        system "cd /home/rails/piratechest/shared/certificates/users && mkdir #{self.id} && cd #{self.id} && ssh-keygen -t rsa -b 2048 -v -f private_key.pem -N #{self.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{self.email}"
+        system "cd /home/rails/piratechest/shared/certificates/users && mkdir #{self.id} && cd #{self.id} && ssh-keygen -t rsa -b 2048 -m PEM -v -f private_key.pem -N #{self.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{self.email}"
       end
     end
 
@@ -26,4 +26,4 @@ class User < ApplicationRecord
     end
 end
 #
-# "cd /home/rails/piratechest/shared/certificates/users && mkdir #{u.id} && cd #{u.id} && ssh-keygen -y -f private_key.pem > public_key.pem -P simoncorreaocampo@gmail.com"
+"cd /home/rails/piratechest/shared/certificates/users && mkdir #{u.id} && cd #{u.id} && ssh-keygen -t rsa -b 2048 -v -f private_key.pem -N #{u.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{u.email}"
