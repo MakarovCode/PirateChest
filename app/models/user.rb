@@ -5,7 +5,7 @@ class User < ApplicationRecord
     acts_as_token_authenticatable
 
     devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :trackable, :validatable, :confirmable, :lockable, :timeoutable
+    :recoverable, :rememberable, :trackable, :validatable, :lockable, :timeoutable
 
     has_many :folders, dependent: :destroy
     has_many :password_users, dependent: :destroy
