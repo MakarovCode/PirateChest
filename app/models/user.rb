@@ -14,7 +14,11 @@ class User < ApplicationRecord
     after_create :generate_keys
 
     def generate_keys
+      if Rails.env == "development"
         system "cd #{Rails.root.join('certificates/users')} && mkdir #{self.id} && cd #{self.id} && ssh-keygen -t rsa -b 2048 -v -f private_key.pem -N #{self.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{self.email}"
+      else
+        system "cd /home/rails/piratechest/shared/certificates/users && mkdir #{self.id} && cd #{self.id} && ssh-keygen -t rsa -b 2048 -v -f private_key.pem -N #{self.email} && openssl rsa -in private_key.pem -pubout -out public_key.pem -passin pass:#{self.email}"
+      end
     end
 
     def self.by_term(term, id)
